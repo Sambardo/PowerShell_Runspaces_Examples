@@ -13,6 +13,7 @@ $runspaceinvokesb =
     $Powershell = [PowerShell]::Create()
     $PowerShell.AddScript({Start-Sleep -Seconds 5;'Done'})
     $PowerShell.Invoke()
+    $PowerShell.Dispose()
 }
 Measure-Command -Expression $runspaceinvokesb 
 #endregion
