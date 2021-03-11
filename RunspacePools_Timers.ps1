@@ -67,4 +67,6 @@ $endTime = (get-date).TimeOfDay
 $runTime = $endTime.Subtract($startTime)
 write-host "End time $endTime" -ForegroundColor Green
 write-host "Run time $($runTime.TotalSeconds)" -ForegroundColor Green
+
+$RunspacePool.Dispose()
 #endregion main example

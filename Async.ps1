@@ -1,7 +1,7 @@
 ﻿#Start a runspace in Async
-$Powershell = [PowerShell]::Create() 
-$PowerShell.AddScript({Start-Sleep -Seconds 20;'Done'})
-$Async = $PowerShell.BeginInvoke() 
+$Runspace = [PowerShell]::Create() 
+$Runspace.AddScript({Start-Sleep -Seconds 20;'Done'})
+$Async = $Runspace.BeginInvoke() 
 
 write-host "We can keep doing stuff now" -ForegroundColor Green
 write-host "Is it done?" -ForegroundColor Green
@@ -9,4 +9,5 @@ write-host "Is it done?" -ForegroundColor Green
 $Async
 
 #Retrieve the output
-$PowerShell.EndInvoke($Async)
+$Runspace.EndInvoke($Async)
+$Runspace.Dispose()
