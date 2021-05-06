@@ -5,9 +5,9 @@ RELATED INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER
 EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF
 MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
 #>
-
+$MaxThreads = 4
 #Create a runspace pool
-$RunspacePool = [runspacefactory]::CreateRunspacePool(1,4)
+$RunspacePool = [runspacefactory]::CreateRunspacePool(1,$MaxThreads)
 
 #Must open the Pool before we can use the Runspaces
 $RunspacePool.Open()
@@ -49,7 +49,7 @@ foreach($RunspaceNumber in 1..10)
 
 #Every 10 seconds check if the runspace pool is still running (not all 3 runspaces are available for work)
 #Display the runspaces for which are running/finished. Observe 3 will always be running picking up new work as they finish others
-while($RunspacePool.GetAvailableRunspaces() -lt 4)
+while($RunspacePool.GetAvailableRunspaces() -lt $MaxThreads)
 {
     Write-host "Runspaces available: $($RunspacePool.GetAvailableRunspaces())" -ForegroundColor Green 
     $RunspaceList.AsyncResult.iscompleted
