@@ -7,7 +7,7 @@ MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
 #>
 
 #Create a runspace pool
-$RunspacePool = [runspacefactory]::CreateRunspacePool(1,3)
+$RunspacePool = [runspacefactory]::CreateRunspacePool(1,4)
 
 #Must open the Pool before we can use the Runspaces
 $RunspacePool.Open()
@@ -26,30 +26,30 @@ Create 10 runspaces
 add a script that take 10-30 seconds in each
 assign them all to the runspace pool and start them
 #>
-foreach($RunspaceInstance in 1..10)
+foreach($RunspaceNumber in 1..10)
 {
-    $PowerShellInstance = [powershell]::Create()
-    $PowerShellInstance.RunspacePool = $RunspacePool
+    $Runspace = [powershell]::Create()
+    $Runspace.RunspacePool = $RunspacePool
 
-    [void]$PowerShellInstance.AddScript(
+    [void]$Runspace.AddScript(
     {
-        param($RunspaceInstance)
-        $runTime = Get-Random -Minimum 10 -Maximum 30
+        param($RunspaceNumber)
+        $runTime = Get-Random -Minimum 10 -Maximum 60
         start-sleep -Seconds $runTime
-        "$RunspaceInstance is done and took $runTime seconds"
+        "$RunspaceNumber is done and took $runTime seconds"
     })
-    [Void]$PowerShellInstance.AddArgument($RunspaceInstance) 
+    [Void]$Runspace.AddArgument($RunspaceNumber) 
 
     $RunspaceList.Add([pscustomobject]@{
-        RunspaceInstance = $RunspaceInstance
-        PowerShell       = $PowerShellInstance
-        AsyncResult      = $PowerShellInstance.BeginInvoke()
+        RunspaceNumber   = $RunspaceNumber
+        Runspace         = $Runspace
+        AsyncResult      = $Runspace.BeginInvoke()
     })
 }  
 
 #Every 10 seconds check if the runspace pool is still running (not all 3 runspaces are available for work)
 #Display the runspaces for which are running/finished. Observe 3 will always be running picking up new work as they finish others
-while($RunspacePool.GetAvailableRunspaces() -lt 3)
+while($RunspacePool.GetAvailableRunspaces() -lt 4)
 {
     Write-host "Runspaces available: $($RunspacePool.GetAvailableRunspaces())" -ForegroundColor Green 
     $RunspaceList.AsyncResult.iscompleted
@@ -59,8 +59,8 @@ while($RunspacePool.GetAvailableRunspaces() -lt 3)
 #Get all the results, then the total run time
 ForEach ($r in $RunspaceList)
 {
-    $R.powershell.EndInvoke($R.AsyncResult)
-    $R.PowerShell.Dispose()
+    $R.Runspace.EndInvoke($R.AsyncResult)
+    $R.Runspace.Dispose()
 }
 
 $endTime = (get-date).TimeOfDay
