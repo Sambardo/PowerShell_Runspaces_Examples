@@ -1,11 +1,11 @@
 <#Add data to the state before creating#>
 
-$InitialSessionState = [System.Management.Automation.Runspaces.InitialSessionState]::CreateDefault() 
+$InitialSessionState = [InitialSessionState]::CreateDefault() 
 
 #this would also work if you want to use a string for the code
 #$MyFunction = [System.Management.Automation.Runspaces.SessionStateFunctionEntry]::new("MyFunction","write-output 'test'") 
 
-$MyFunction = [System.Management.Automation.Runspaces.SessionStateFunctionEntry]::new("MyFunction",{get-process powershell}) 
+$MyFunction = [System.Management.Automation.Runspaces.SessionStateFunctionEntry]::new("MyFunction",{get-process powershell_ISE}) 
 $InitialSessionState.Commands.Add($MyFunction)
 
 $Runspace = [PowerShell]::Create($InitialSessionState) 
